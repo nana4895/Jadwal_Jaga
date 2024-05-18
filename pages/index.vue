@@ -20,141 +20,66 @@
         </div>
     </div>
     <br><br>
-    {{ time }} <br>
-{{ dateTime }} <br>
-{{ tahun }} - {{ bulan }} - {{ tanggal }} || {{ jam }} : {{ menit }} : {{ detik }}
+{{ tampungKSM }} <br>
+<!-- {{ tahun }} - {{ bulan }} - {{ tanggal }} || {{ jam }} : {{ menit }} : {{ detik }} <br> -->
+{{ waktuSekarang }} <br>
+{{ tanggalSekarang }} <br>
+{{ tanggalKemarin }} <br>
+{{ tanggalBesok }}
     <br><br>
 <!-- {{ jdwlDokters }} -->
-    <v-row>
-        <v-col v-for="(bebas, i) in tampungKSM.length" :key="i" cols="1" md="2">
-            <v-card :color="color" :variant="variant" class="mx-auto">
-                <v-card-item>
-                    <div>
-                        <div class="text-h6 mb-1">
-                            {{ tampungKSM[i].idksm }} <br>
-                            {{ tampungKSM[i].ket_ksm }}
+    <v-row dense>
+        <v-carousel cycle height="500px" show-arrows :interval="2000" transition="fade-transition">
+            <v-carousel-item v-for="(bebas, i) in tampungKSM" :key="i">
+                <v-card :color="color" variant="tonal" width="240px" height="400px" class="align-center" color="surface-variant">
+                    <v-card-item>
+                        <div class="text-center">
+                            <div class="text-h6 mb-1">
+                                {{ bebas.ket_ksm }}
+                            </div>
+                            <v-list v-for="(jadwal, indexJadwal) in bebas.jadwal" :key="indexJadwal">
+                                <v-list-item v-if="new Date() >= new Date(jadwal.Jaga_awal) && new Date() <= new Date(jadwal.Jaga_akhir)">
+                                    <v-list-item-content>
+                                        <v-list-item-title>{{ jadwal.Nama_petugas }}</v-list-item-title>
+                                        <v-list-item-subtitle>{{ jadwal.Level.Nama_level_igd }}</v-list-item-subtitle>
+                                        <v-list-item-subtitle>{{ jadwal.Jaga_awal }}</v-list-item-subtitle>
+                                        <v-list-item-subtitle>{{ jadwal.Jaga_akhir }}</v-list-item-subtitle>
+                                    </v-list-item-content>
+                                </v-list-item>
+                            </v-list>
                         </div>
-                        <!-- <div class="text-h6 mb-1">
-                            Headline
-                        </div> -->
-                        <!-- <div class="text-caption">Greyhound divisely hello coldly fonwderfully</div><br> -->
-                        <!-- {{ tampungKSM[i].jadwal.length }} -->
-                        <br>
-                        <v-list dense>
-                            <v-list-item v-for="(item, index) in tampungKSM[i].jadwal" :key="index">
-                                
-                                <!-- <template v-if="new Date(item.Jaga_awal) <= new Date() && new Date(item.Jaga_akhir) >= new Date()"> -->
-                                <template v-if="new Date(new Date(item.Jaga_awal)) <= new Date(a) && new Date(item.Jaga_akhir).setDate(new Date(item.Jaga_akhir).getDate() - 1) >= new Date()">
-                                    <v-list-item-subtitle>Jaga hari inii</v-list-item-subtitle>
-                                    <v-list-item-content>
-                                    <v-list-item-title>{{ item.Nama_petugas }}</v-list-item-title>
-                                    <v-list-item-subtitle>{{ item.Level.Nama_level_igd }}</v-list-item-subtitle>
-                                    <v-list-item-subtitle>{{ item.Jaga_awal }}</v-list-item-subtitle>
-                                    <v-list-item-subtitle>{{ item.Jaga_akhir.replace(/T/g, ' ') }}</v-list-item-subtitle>
-                                    <v-list-item-subtitle>{{ new Date(item.Jaga_awal).toLocaleString() }}</v-list-item-subtitle>
-                                    <v-list-item-subtitle>{{ new Date(item.Jaga_akhir).toLocaleString().replace(/T/g, ' ') }}</v-list-item-subtitle>
-                                </v-list-item-content>
-                                </template>
-                            <template v-else>
-                                <v-list-item-subtitle>Jaga hari inii</v-list-item-subtitle>
-                                    <v-list-item-content>
-                                    <v-list-item-title>{{ item.Nama_petugas }}</v-list-item-title>
-                                    <v-list-item-subtitle>{{ item.Level.Nama_level_igd }}</v-list-item-subtitle>
-                                    <v-list-item-subtitle>{{ item.Jaga_awal }}</v-list-item-subtitle>
-                                    <v-list-item-subtitle>{{ item.Jaga_akhir.replace(/T/g, ' ') }}</v-list-item-subtitle>
-                                    <v-list-item-subtitle>{{ new Date(item.Jaga_awal).toLocaleString() }}</v-list-item-subtitle>
-                                    <v-list-item-subtitle>{{ new Date(item.Jaga_akhir).toLocaleString().replace(/T/g, ' ') }}</v-list-item-subtitle>
-                                </v-list-item-content>                            
-                            </template>
-                                
-                            </v-list-item>
-                        </v-list>
-                        
-                    </div>
-                </v-card-item>
-            </v-card>
-        </v-col>
+                    </v-card-item>
+                </v-card>
+            </v-carousel-item>
+        </v-carousel>
     </v-row>
 </template>
 
 
 <script setup>
 import Swal from 'sweetalert2'
-// const _dataPPI = await useFetch(`https://satu.rssa.top/items/data_ppi`);
-const _dataKSM = await $fetch(`https://satu.dev.rssa.id/items/daftar_ksm`);
-const dataKSM = _dataKSM.data;
-const _Users = await useFetch(`http://127.0.0.1:8000/api/getUsers`);
-const data = _Users.data;
-// const dataPPI = _dataPPI.data;
-// const _jdwlDokter = await $fetch(`https://satu.dev.rssa.id/items/data_jadwal_jaga_dokter?fields=id,Nama_petugas,Ksm,Level.Nama_level_igd,Jaga_awal,Jaga_akhir`);
-const _jdwlDokter = await $fetch(`https://satu.dev.rssa.id/items/data_jadwal_jaga_dokter?fields=id,Nama_petugas,Ksm,Level.Nama_level_igd,Jaga_awal,Jaga_akhir&filter[Jaga_awal][_between]=["2024-05-16", "2024-05-18"]`);
-const jdwlDokters = _jdwlDokter.data;
-
-let tampungKSM = [];
-const ksm = _dataKSM.data
-ksm.forEach(_ksm => {
-    let idksm = _ksm['id'];
-
-    let filterjdwl = jdwlDokters.filter(jadwal => jadwal['Ksm'] === idksm);
-    if (filterjdwl && filterjdwl.length > 0) {
-        let tampiljadwalBaru = {
-            idksm: _ksm['id'],
-            ket_ksm: _ksm['Nama_ksm'],
-            jadwal: []
-        };
-        filterjdwl.forEach(jdwl => {
-            tampiljadwalBaru.jadwal.push(jdwl);
-        });
-        tampungKSM.push(tampiljadwalBaru);
-    };
-});
-
-const a = "2024-05-16T23:00:00"
-// _____________________________________________________________
 import { ref, onMounted, onUnmounted } from 'vue';
 
-const time = ref(new Date().toLocaleTimeString());
-const updateClock = () => {
-    time.value = new Date().toLocaleTimeString();
-};
-let intervalId;
-onMounted(() => {
-    intervalId = setInterval(updateClock, 1000);
-});
-// _________________________________________________________________
-const dateTime = ref(new Date().toLocaleString());
-const updateDateTime = () => {
-    dateTime.value = new Date().toLocaleString();
-};
-let dateTimeIntervalId;
-onMounted(() => {
-    dateTimeIntervalId = setInterval(updateDateTime, 1000);
-});
-onUnmounted(() => {
-    clearInterval(dateTimeIntervalId);
-});
-
-
-onUnmounted(() => {
-    clearInterval(intervalId);
-});
 // ____________________________________________________________________
-const tanggalSekarang = ref(new Date());
-const tanggal = ref(tanggalSekarang.value.getDate());
-const bulan = ref(tanggalSekarang.value.getMonth() + 1); // Bulan dimulai dari 0, jadi tambahkan 1
-const tahun = ref(tanggalSekarang.value.getFullYear());
-const jam = ref(tanggalSekarang.value.getHours());
-const menit = ref(tanggalSekarang.value.getMinutes());
-const detik = ref(tanggalSekarang.value.getSeconds());
+const waktuSekarang = ref({
+    tanggal: new Date().getDate(),
+    bulan: new Date().getMonth() + 1, // Bulan dimulai dari 0, jadi tambahkan 1
+    tahun: new Date().getFullYear(),
+    jam: new Date().getHours(),
+    menit: new Date().getMinutes(),
+    detik: new Date().getSeconds()
+});
+
+const formatDuaDigit = (nilai) => nilai <= 9 ? `0${nilai}` : nilai;
 
 const updateWaktu = () => {
     const sekarang = new Date();
-    tanggal.value = (sekarang.getDate()<=9)?"0"+sekarang.getDate():sekarang.getDate();
-    bulan.value = ((sekarang.getMonth() + 1)<=9)?"0"+(sekarang.getMonth() + 1):(sekarang.getMonth() + 1);
-    tahun.value = sekarang.getFullYear();
-    jam.value = (sekarang.getHours()<=9)?"0"+sekarang.getHours():sekarang.getHours();
-    menit.value = (sekarang.getMinutes()<=9)?"0"+sekarang.getMinutes():sekarang.getMinutes();
-    detik.value = (sekarang.getSeconds()<=9)?"0"+sekarang.getSeconds():sekarang.getSeconds();
+    waktuSekarang.value.tanggal = formatDuaDigit(sekarang.getDate());
+    waktuSekarang.value.bulan = formatDuaDigit(sekarang.getMonth() + 1);
+    waktuSekarang.value.tahun = sekarang.getFullYear();
+    waktuSekarang.value.jam = formatDuaDigit(sekarang.getHours());
+    waktuSekarang.value.menit = formatDuaDigit(sekarang.getMinutes());
+    waktuSekarang.value.detik = formatDuaDigit(sekarang.getSeconds());
 };
 
 let waktuIntervalId;
@@ -165,6 +90,56 @@ onMounted(() => {
 onUnmounted(() => {
     clearInterval(waktuIntervalId);
 });
+
+// const _dataKSM = await $fetch(`https://satu.dev.rssa.id/items/daftar_ksm`);
+// const dataKSM = _dataKSM.data;
+
+// const _jdwlDokter = await $fetch(`https://satu.dev.rssa.id/items/data_jadwal_jaga_dokter?fields=id,Nama_petugas,Ksm,Level.Nama_level_igd,Jaga_awal,Jaga_akhir`);
+const tanggalSekarang = new Date();
+const tanggalKemarin = new Date(tanggalSekarang.getFullYear(), tanggalSekarang.getMonth(), tanggalSekarang.getDate() -7).toISOString().split('T')[0];
+const tanggalBesok = new Date(tanggalSekarang.getFullYear(), tanggalSekarang.getMonth(), tanggalSekarang.getDate() +7 ).toISOString().split('T')[0];
+
+// const _jdwlDokter = await $fetch(`https://satu.dev.rssa.id/items/data_jadwal_jaga_dokter?fields=id,Nama_petugas,Ksm,Level.Nama_level_igd,Jaga_awal,Jaga_akhir&filter[Jaga_awal][_between]=[${tanggalKemarin}, ${tanggalBesok}]`);
+// const _jdwlDokter = await $fetch(`https://satu.dev.rssa.id/items/data_jadwal_jaga_dokter?fields=id,Nama_petugas,Ksm,Level.Nama_level_igd,Jaga_awal,Jaga_akhir&filter[Jaga_awal][_between]=[${tanggalKemarin.toISOString().split('T')[0]}, ${tanggalSekarang.toISOString().split('T')[0]}]`);
+// const jdwlDokters = _jdwlDokter.data;
+
+let tampungKSM = ref([]);
+const updateKSM = async () => {
+    console.log("ini refresh")
+    tampungKSM.value = []; // Kosongkan array sebelum mengisi ulang
+    const _dataKSM = await $fetch(`https://satu.dev.rssa.id/items/daftar_ksm`);
+    const ksm = _dataKSM.data;
+    const _jdwlDokter = await $fetch(`https://satu.dev.rssa.id/items/data_jadwal_jaga_dokter?fields=id,Nama_petugas,Ksm,Level.Nama_level_igd,Jaga_awal,Jaga_akhir&filter[Jaga_awal][_between]=[${tanggalKemarin}, ${tanggalBesok}]`);
+    const jdwlDokters = _jdwlDokter.data;
+
+    ksm.forEach(_ksm => {
+        let idksm = _ksm['id'];
+
+        let filterjdwl = jdwlDokters.filter(jadwal => jadwal['Ksm'] === idksm);
+        if (filterjdwl && filterjdwl.length > 0) {
+            let tampiljadwalBaru = {
+                idksm: _ksm['id'],
+                ket_ksm: _ksm['Nama_ksm'],
+                jadwal: []
+            };
+            const sekarang = new Date();
+            filterjdwl.forEach(jdwl => {
+                const awal = new Date(jdwl.Jaga_awal);
+                const akhir = new Date(jdwl.Jaga_akhir);
+                if (sekarang >= awal && sekarang <= akhir) {
+                    tampiljadwalBaru.jadwal.push(jdwl);
+                }
+            });
+            if (tampiljadwalBaru.jadwal.length > 0) {
+                tampungKSM.value.push(tampiljadwalBaru);
+            }
+        };
+    });
+    setTimeout(updateKSM, 20000); // Jadwalkan pembaruan berikutnya setiap 10 detik
+};
+
+updateKSM(); // Panggilan awal untuk memulai proses
+
 
 
 
